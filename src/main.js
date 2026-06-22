@@ -167,12 +167,12 @@ async function salvarAtual() {
     return
   }
   try {
-    await saveScore({
+    const { storage } = await saveScore({
       titulo: elTitulo.value || 'Sem título',
       notas: audioSeq.map((p) => p.nota),
       resultado: currentResultado,
     })
-    setStatus(supabaseEnabled ? 'Salvo no Supabase.' : 'Salvo localmente.', 'ok')
+    setStatus(storage === 'supabase' ? 'Salvo no Supabase.' : 'Salvo localmente.', 'ok')
     await atualizarLista()
   } catch (e) {
     setStatus('Erro ao salvar: ' + e.message, 'error')
@@ -192,7 +192,7 @@ async function cadastrarTodas() {
       })
       n++
     }
-    setStatus(`✅ ${n} escalas cadastradas (${supabaseEnabled ? 'Supabase' : 'local'}).`, 'ok')
+    setStatus(`✅ ${n} escalas cadastradas.`, 'ok')
     await atualizarLista()
   } catch (e) {
     setStatus(`Cadastrei ${n} antes de falhar: ${e.message}`, 'error')
@@ -202,10 +202,11 @@ async function cadastrarTodas() {
 let savedRows = []
 async function atualizarLista() {
   try {
-    savedRows = await listScores()
+    const { rows } = await listScores()
+    savedRows = rows
   } catch (e) {
+    savedRows = []
     setStatus('Erro ao listar: ' + e.message, 'error')
-    return
   }
   renderLista()
 }
