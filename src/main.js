@@ -252,6 +252,22 @@ function renderLista() {
   }
 }
 
+// --- tema claro/escuro ---
+const elTema = $('tema')
+function aplicarIconeTema() {
+  elTema.textContent = document.documentElement.dataset.theme === 'dark' ? '☀️' : '🌙'
+}
+elTema.addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme === 'dark'
+  const novo = dark ? 'light' : 'dark'
+  document.documentElement.dataset.theme = novo
+  try {
+    localStorage.setItem('tema', novo)
+  } catch {}
+  aplicarIconeTema()
+})
+aplicarIconeTema()
+
 // popular o seletor de escalas
 for (const sc of SCALES) {
   const opt = document.createElement('option')
