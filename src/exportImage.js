@@ -1,17 +1,20 @@
-// Compõe a pauta (SVG da VexFlow) + o braço (SVG custom) num único SVG,
-// rasteriza em <canvas> e dispara o download como PNG.
+// Compõe a pauta (SVG da VexFlow) + um ou mais diagramas de braço (SVG custom)
+// num único SVG, rasteriza em <canvas> e dispara o download como PNG.
 
 const PADDING = 24
 const TITLE_H = 44
-const GAP = 24
+const LABEL_H = 26
+const GAP = 20
 
 function slugify(text) {
-  return (text || 'partitura')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '') || 'partitura'
+  return (
+    (text || 'partitura')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '') || 'partitura'
+  )
 }
 
 function svgDims(svgEl) {
@@ -20,50 +23,63 @@ function svgDims(svgEl) {
   return { w, h }
 }
 
-// Monta o SVG composto (string) com a pauta em cima e o braço embaixo.
-export function composeSvg(title, staffSvgEl, neck) {
+function escapeXml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function stripOuterSvg(svg) {
+  return svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')
+}
+
+// necks: [{ label, svg, width, height }]
+export function composeSvg(title, staffSvgEl, necks) {
   const staff = svgDims(staffSvgEl)
   const staffInner = staffSvgEl.innerHTML
-  const contentW = Math.max(staff.w, neck.width)
+  const contentW = Math.max(staff.w, ...necks.map((nk) => nk.width))
   const width = contentW + PADDING * 2
-  const height = TITLE_H + staff.h + GAP + neck.height + PADDING * 2
+  let y = PADDING
 
   const parts = []
   parts.push(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" font-family="Arial, sans-serif">`
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="HEIGHT" viewBox="0 0 ${width} HEIGHT" font-family="Arial, sans-serif">`
   )
-  parts.push(`<rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff"/>`)
+  parts.push(`<rect x="0" y="0" width="${width}" height="HEIGHT" fill="#ffffff"/>`)
+
   // título
   parts.push(
-    `<text x="${width / 2}" y="${PADDING + 22}" text-anchor="middle" font-size="20" font-weight="bold" fill="#111827">${escapeXml(title || 'Partitura')}</text>`
+    `<text x="${width / 2}" y="${y + 22}" text-anchor="middle" font-size="20" font-weight="bold" fill="#111827">${escapeXml(title || 'Partitura')}</text>`
   )
-  // pauta (re-embrulha o conteúdo interno da VexFlow num svg posicionado)
-  const staffY = PADDING + TITLE_H
+  y += TITLE_H
+
+  // pauta
   parts.push(
-    `<svg x="${PADDING}" y="${staffY}" width="${staff.w}" height="${staff.h}" viewBox="0 0 ${staff.w} ${staff.h}">${staffInner}</svg>`
+    `<svg x="${PADDING}" y="${y}" width="${staff.w}" height="${staff.h}" viewBox="0 0 ${staff.w} ${staff.h}">${staffInner}</svg>`
   )
-  // braço
-  const neckY = staffY + staff.h + GAP
-  // remove a tag <svg ...> externa do braço e reembrulha posicionada
-  const neckInner = neck.svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')
-  parts.push(
-    `<svg x="${PADDING}" y="${neckY}" width="${neck.width}" height="${neck.height}" viewBox="0 0 ${neck.width} ${neck.height}">${neckInner}</svg>`
-  )
+  y += staff.h + GAP
+
+  // braços com rótulo
+  for (const nk of necks) {
+    if (nk.label) {
+      parts.push(
+        `<text x="${PADDING}" y="${y + 18}" font-size="15" font-weight="bold" fill="#374151">${escapeXml(nk.label)}</text>`
+      )
+      y += LABEL_H
+    }
+    parts.push(
+      `<svg x="${PADDING}" y="${y}" width="${nk.width}" height="${nk.height}" viewBox="0 0 ${nk.width} ${nk.height}">${stripOuterSvg(nk.svg)}</svg>`
+    )
+    y += nk.height + GAP
+  }
+
   parts.push('</svg>')
-  return { svg: parts.join(''), width, height }
+  const height = y - GAP + PADDING
+  const svg = parts.join('').replace(/HEIGHT/g, String(height))
+  return { svg, width, height }
 }
 
-function escapeXml(s) {
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-}
-
-// Rasteriza o SVG composto e baixa como PNG (cai na pasta de Downloads padrão).
-export async function exportPng(title, staffSvgEl, neck) {
-  const { svg, width, height } = composeSvg(title, staffSvgEl, neck)
-  const scale = 2 // nitidez
+export async function exportPng(title, staffSvgEl, necks) {
+  const { svg, width, height } = composeSvg(title, staffSvgEl, necks)
+  const scale = 2
   const canvas = document.createElement('canvas')
   canvas.width = Math.ceil(width * scale)
   canvas.height = Math.ceil(height * scale)
@@ -71,7 +87,6 @@ export async function exportPng(title, staffSvgEl, neck) {
 
   const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
   const url = URL.createObjectURL(blob)
-
   await new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => {
@@ -86,9 +101,8 @@ export async function exportPng(title, staffSvgEl, neck) {
   })
   URL.revokeObjectURL(url)
 
-  const pngUrl = canvas.toDataURL('image/png')
   const a = document.createElement('a')
-  a.href = pngUrl
+  a.href = canvas.toDataURL('image/png')
   a.download = `violino_${slugify(title)}_braco_intervalos.png`
   document.body.appendChild(a)
   a.click()

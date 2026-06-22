@@ -24,11 +24,6 @@
             Escala
             <select id="escala"></select>
           </label>
-          <fieldset class="dir">
-            <legend>Direção</legend>
-            <label class="inline"><input type="radio" name="dir" value="ida" checked /> Ida (subindo)</label>
-            <label class="inline"><input type="radio" name="dir" value="volta" /> Volta (descendo)</label>
-          </fieldset>
           <button id="gerarEscala" class="primary">Gerar escala</button>
         </div>
 
@@ -56,12 +51,11 @@
       </section>
 
       <section class="preview">
-        <h2>Pauta</h2>
+        <h2>Pauta — ida e volta (subindo e descendo)</h2>
         <div id="staff" class="render-box"></div>
 
-        <h2>Braço do violino</h2>
         <div class="player">
-          <button id="tocar" class="play">▶ Tocar</button>
+          <button id="tocar" class="play">▶ Tocar (sobe e desce)</button>
           <button id="parar" class="stop">■ Parar</button>
           <label class="inline-ctl">Instrumento
             <select id="instrumento">
@@ -74,7 +68,15 @@
             <input id="velocidade" type="range" min="180" max="700" step="20" value="380" />
           </label>
         </div>
-        <div id="neck" class="render-box"></div>
+
+        <h2 id="tituloNeckIda">Braço — subindo ↑</h2>
+        <div id="neckIda" class="render-box"></div>
+
+        <div id="voltaWrap">
+          <h2>Braço — descendo ↓</h2>
+          <div id="neckVolta" class="render-box"></div>
+        </div>
+
         <p class="legenda">
           <span class="dot solta"></span> corda solta
           <span class="dot alto"></span> dedo alto
