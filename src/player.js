@@ -33,11 +33,17 @@ export async function tocar(playSeq, msPorNota, instrumento, onStep) {
   const cps = (typeof window.getCps === 'function' && window.getCps()) || 0.5
   const fator = secPorNota * n * cps
 
+  // synth waveform (sine/sawtooth/triangle/square) + envelope suave e filtro
+  // para soar menos "duro". Cai para o synth padrão se algum controle faltar.
   let pat = window.note(midis)
   try {
-    if (instrumento) pat = pat.sound(instrumento)
+    pat = pat.sound(instrumento || 'sawtooth').attack(0.02).release(0.25).lpf(3000).gain(0.85)
   } catch {
-    /* instrumento indisponível -> usa o synth padrão */
+    try {
+      pat = window.note(midis).sound(instrumento || 'sawtooth')
+    } catch {
+      pat = window.note(midis)
+    }
   }
   pat.slow(fator).play()
 
