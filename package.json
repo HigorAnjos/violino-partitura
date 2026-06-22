@@ -1,0 +1,20 @@
+{
+  "name": "violino-partitura",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "validate": "node scripts/validate-scales.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "vexflow": "^4.2.3"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.61.0",
+    "vite": "^5.4.0"
+  }
+}

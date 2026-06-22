@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Violino — Partitura + Braço</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🎻</text></svg>" />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>🎻 Partitura → Braço do Violino</h1>
+      <p class="sub">
+        Escolha uma escala (2 oitavas, 1ª posição) ou digite notas; veja a pauta e o braço com dedos e intervalos.
+      </p>
+    </header>
+
+    <main>
+      <section class="controls">
+        <div class="row">
+          <label class="grow">
+            Escala
+            <select id="escala"></select>
+          </label>
+          <fieldset class="dir">
+            <legend>Direção</legend>
+            <label class="inline"><input type="radio" name="dir" value="ida" checked /> Ida (subindo)</label>
+            <label class="inline"><input type="radio" name="dir" value="volta" /> Volta (descendo)</label>
+          </fieldset>
+          <button id="gerarEscala" class="primary">Gerar escala</button>
+        </div>
+
+        <details>
+          <summary>Ou digitar notas livres</summary>
+          <label>
+            Notas (espaço ou vírgula)
+            <textarea id="notas" rows="2" placeholder="Si Do# Re# Mi Fa# Sol# La# Si"></textarea>
+          </label>
+          <button id="gerarNotas">Gerar das notas</button>
+        </details>
+
+        <label>
+          Título
+          <input id="titulo" type="text" value="Sol maior — ida (subindo)" />
+        </label>
+
+        <div class="actions">
+          <button id="exportar">Exportar PNG</button>
+          <button id="salvar">Salvar</button>
+          <button id="cadastrarTodas">Cadastrar todas as escalas</button>
+        </div>
+
+        <p id="status" class="status"></p>
+      </section>
+
+      <section class="preview">
+        <h2>Pauta</h2>
+        <div id="staff" class="render-box"></div>
+
+        <h2>Braço do violino</h2>
+        <div id="neck" class="render-box"></div>
+        <p class="legenda">
+          <span class="dot solta"></span> corda solta
+          <span class="dot alto"></span> dedo alto
+          <span class="dot baixo"></span> dedo baixo
+          &nbsp; T = tom &nbsp; <span class="s">S</span> = semitom &nbsp; ⇢ troca de corda
+        </p>
+      </section>
+
+      <section class="saved">
+        <h2>Partituras salvas</h2>
+        <input id="busca" type="search" placeholder="Buscar por título ou nota..." />
+        <ul id="lista"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
