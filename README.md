@@ -8,7 +8,11 @@ App web estático para estudar escalas de violino. Gera:
    pestana no topo, **dedo** (0–4) e nome de cada nota, cor por **corda solta /
    dedo alto (azul) / dedo baixo (laranja)**, marcadores **T/S** entre posições da
    mesma corda e **setas de troca de corda**;
-3. um **PNG** combinando os dois, para baixar e estudar.
+3. um **PNG** combinando os dois, para baixar e estudar;
+4. **áudio** — botão ▶ Tocar (via [Strudel](https://strudel.cc)) que sintetiza a
+   escala (violino / piano / sintetizador, com controle de velocidade) e **acende
+   a nota atual no braço** em tempo real. O Strudel é carregado via CDN (precisa de
+   internet para o som).
 
 ### 24 escalas cadastradas
 

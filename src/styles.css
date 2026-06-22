@@ -18,11 +18,20 @@ body {
 }
 
 header {
-  padding: 24px 20px 8px;
+  padding: 28px 20px 16px;
   text-align: center;
+  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #faf5ff 100%);
+  border-bottom: 1px solid var(--border);
 }
-header h1 { margin: 0; font-size: 26px; }
-header .sub { margin: 4px 0 0; color: var(--muted); }
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  background: linear-gradient(90deg, #6d28d9, #2563eb, #16a34a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+header .sub { margin: 6px 0 0; color: var(--muted); }
 
 main {
   max-width: 960px;
@@ -74,6 +83,21 @@ details summary { cursor: pointer; color: var(--accent); font-size: 14px; margin
 .legenda .dot.alto { background: #e8f0fe; border-color: #2563eb; }
 .legenda .dot.baixo { background: #fdecd8; border-color: #d97706; }
 .legenda .s { color: #dc2626; font-weight: bold; }
+
+/* player de áudio (Strudel) */
+.player { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.player button.play { background: #16a34a; color: #fff; border-color: #16a34a; font-weight: 600; }
+.player button.play:hover { background: #15803d; }
+.player button.stop { background: #fff; }
+.inline-ctl { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); margin: 0; }
+.inline-ctl select, .inline-ctl input[type='range'] { width: auto; margin: 0; }
+
+/* nota tocando: acende a bolinha no braço */
+#neck svg circle.np-on {
+  stroke: #16a34a;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 5px rgba(22, 163, 74, 0.8));
+}
 
 .examples { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
 

@@ -105,7 +105,7 @@ export function buildNeckSvg(playSeq) {
     const x = stringX(p.corda)
     const y = offsetY(p.offset)
     const c = CORES[p.tipo] || CORES.solta
-    P.push(`<circle cx="${x}" cy="${y}" r="${RADIUS}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2"/>`)
+    P.push(`<circle data-pos="${p.corda}-${p.offset}" cx="${x}" cy="${y}" r="${RADIUS}" fill="${c.fill}" stroke="${c.stroke}" stroke-width="2"/>`)
     P.push(`<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="13" font-weight="bold" fill="${c.text}">${p.dedo}</text>`)
     P.push(`<text x="${x + RADIUS + 5}" y="${y + 4}" font-size="12" fill="#111827">${esc(p.nota)}</text>`)
   }

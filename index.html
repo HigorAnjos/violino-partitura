@@ -6,6 +6,8 @@
     <title>Violino — Partitura + Braço</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🎻</text></svg>" />
     <link rel="stylesheet" href="/src/styles.css" />
+    <!-- Strudel (áudio no navegador) — expõe initStrudel(), note(), hush() etc. -->
+    <script src="https://unpkg.com/@strudel/web@1.3.0/dist/index.js"></script>
   </head>
   <body>
     <header>
@@ -58,6 +60,20 @@
         <div id="staff" class="render-box"></div>
 
         <h2>Braço do violino</h2>
+        <div class="player">
+          <button id="tocar" class="play">▶ Tocar</button>
+          <button id="parar" class="stop">■ Parar</button>
+          <label class="inline-ctl">Instrumento
+            <select id="instrumento">
+              <option value="gm_violin">🎻 Violino</option>
+              <option value="piano">🎹 Piano</option>
+              <option value="sawtooth">🎛️ Sintetizador</option>
+            </select>
+          </label>
+          <label class="inline-ctl">Velocidade
+            <input id="velocidade" type="range" min="180" max="700" step="20" value="380" />
+          </label>
+        </div>
         <div id="neck" class="render-box"></div>
         <p class="legenda">
           <span class="dot solta"></span> corda solta

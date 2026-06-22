@@ -8,6 +8,7 @@ import { OPEN_STRING_ABS } from './notes.js'
 import { renderStaff } from './renderStaff.js'
 import { renderNeck, buildNeckSvg } from './renderNeck.js'
 import { exportPng } from './exportImage.js'
+import { tocar, parar, strudelDisponivel } from './player.js'
 import { saveScore, listScores, supabaseEnabled } from './supabase.js'
 
 const $ = (id) => document.getElementById(id)
@@ -41,6 +42,7 @@ function colorType(dedo, offset) {
 }
 
 function render(seq, titulo, tonalidade = null) {
+  parar() // interrompe áudio anterior ao trocar de partitura
   playSeq = seq
   staffSvgEl = renderStaff(elStaff, seq, tonalidade)
   renderNeck(elNeck, seq)
@@ -81,6 +83,38 @@ function gerarNotas() {
   } else {
     setStatus(`${seq.length} notas mapeadas.`, 'ok')
   }
+}
+
+// --- reprodução de áudio (Strudel) ---
+function destacarNota(i) {
+  const circles = elNeck.querySelectorAll('circle[data-pos]')
+  circles.forEach((c) => c.classList.remove('np-on'))
+  if (i < 0 || !playSeq[i]) return
+  const p = playSeq[i]
+  const alvo = elNeck.querySelector(`circle[data-pos="${p.corda}-${p.offset}"]`)
+  if (alvo) alvo.classList.add('np-on')
+}
+
+function tocarAtual() {
+  if (playSeq.length === 0) {
+    setStatus('Gere uma escala antes de tocar.', 'error')
+    return
+  }
+  if (!strudelDisponivel()) {
+    setStatus('Áudio (Strudel) não carregou — precisa de internet.', 'error')
+    return
+  }
+  const ms = Number($('velocidade').value) || 380
+  const instrumento = $('instrumento').value
+  setStatus('▶ Tocando…', 'ok')
+  tocar(playSeq, ms, instrumento, destacarNota).catch((e) => {
+    setStatus('Erro ao tocar: ' + e.message, 'error')
+  })
+}
+
+function pararAtual() {
+  parar()
+  destacarNota(-1)
 }
 
 async function exportar() {
@@ -191,6 +225,8 @@ for (const sc of SCALES) {
 
 $('gerarEscala').addEventListener('click', gerarEscala)
 $('gerarNotas').addEventListener('click', gerarNotas)
+$('tocar').addEventListener('click', tocarAtual)
+$('parar').addEventListener('click', pararAtual)
 $('exportar').addEventListener('click', exportar)
 $('salvar').addEventListener('click', salvarAtual)
 $('cadastrarTodas').addEventListener('click', cadastrarTodas)
